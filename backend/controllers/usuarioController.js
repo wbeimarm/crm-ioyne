@@ -1,32 +1,31 @@
-const { obtenerUsuarios, crearUsuarios } = require('../models/usuarioModel');
+const { obtenerUsuarios, crearUsuario } = require('../models/usuarioModel');
 
-//obtener todos los usuarios (GET)
-
-const listarUsuarios = async(res, req) => {
+// Obtener todos los usuarios
+const listarUsuarios = async(req, res) => {
     try {
         const usuarios = await obtenerUsuarios();
-        res.json(usuarios); //responde con la lista de usuarios en formato JSON
+        res.json(usuarios);
     } catch (error) {
-        console.error('Error al obtener usuarios', error);
-        res.status(500).json({ mensaje: 'Error del servidor' })
+        console.error('Error al obtener usuarios:', error.message, error.stack);
+        res.status(500).json({ mensaje: 'Error del servidor' });
     }
 };
 
-
-//crear un usuario (POST)
+// Crear un nuevo usuario
 const registrarUsuario = async(req, res) => {
     try {
-        const { nombe, email, contraseña } = req.body;
+        const { nombre, email, contraseña } = req.body;
 
-        // validacion basica
+        // Validación básica
         if (!nombre || !email || !contraseña) {
             return res.status(400).json({ mensaje: 'Faltan datos obligatorios' });
         }
 
-        const nuevoUsuario = crearUsuario({ nombre, email, contraseña });
-        res.status(201).json(nuevoUsuario) //responde con el nuevo usuario creado
+        const nuevoUsuario = await crearUsuario({ nombre, email, contraseña });
+        res.status(201).json(nuevoUsuario);
     } catch (error) {
-        console.error('Error al crear usuario', error);
+        // ✅ Agregado para mostrar mejor el error
+        console.error('Error al crear usuario:', error.message, error.stack);
         res.status(500).json({ mensaje: 'Error al crear el usuario' });
     }
 };

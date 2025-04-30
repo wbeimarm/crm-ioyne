@@ -1,28 +1,27 @@
-const expres = require('express');
+// backend/index.js
+const express = require('express');
 const cors = require('cors');
-const app = expres();
+require('dotenv').config(); // ✅ ejecutar la función correctamente
 
-// Cargamos variables de entorno desde el archivo .env
-require('dotenv').config;
+const app = express();
 
-//Importamos las rutas de usuarios
+// Importamos las rutas de usuarios
 const usuarioRoutes = require('./routes/usuarioRoutes');
 
 // Activamos middlewares
 app.use(cors());
-app.use(expres.json());
+app.use(express.json()); // ✅ corregido
 
-//Ruta base
+// Ruta base
 app.get('/', (req, res) => {
-    res.send('¡Servidor CRM IOYNE funcionando!')
+    res.send('¡Servidor CRM IOYNE funcionando!');
 });
 
-
-//Usamos las rutas de usuarios
+// Usamos las rutas de usuarios
 app.use('/api/usuarios', usuarioRoutes);
 
-//Encendemos el servidor en el puerto configurado
+// Encendemos el servidor en el puerto configurado
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-    console.log(`Servidor corriendo en http://localhost: ${PORT}`)
-})
+    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+});
