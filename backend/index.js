@@ -8,6 +8,8 @@ const app = express();
 // Importamos las rutas de usuarios
 const usuarioRoutes = require('./routes/usuarioRoutes');
 
+const loginRoutes = require('./routes/loginRoutes')
+
 // Activamos middlewares
 app.use(cors());
 app.use(express.json()); // ✅ corregido
@@ -19,6 +21,9 @@ app.get('/', (req, res) => {
 
 // Usamos las rutas de usuarios
 app.use('/api/usuarios', usuarioRoutes);
+app.use('/api/login', loginRoutes);
+
+
 
 // Encendemos el servidor en el puerto configurado
 const PORT = process.env.PORT || 3001;
