@@ -1,36 +1,48 @@
 // backend/index.js
+
+
+// IMPORTACIONES
+
 const express = require('express');
 const cors = require('cors');
-require('dotenv').config(); // ✅ ejecutar la función correctamente
+require('dotenv').config(); // Carga variables de entorno desde .env
+
+// Rutas
+const usuarioRoutes = require('./routes/usuarioRoutes');
+const loginRoutes = require('./routes/loginRoutes');
+const clienteRoutes = require('./routes/clientesRoutes');
+const productosRoutes = require('./routes/productosRoutes');
+
+
+//  CONFIGURACIÓN INICIAL
 
 const app = express();
 
-// Importamos las rutas de usuarios
-const usuarioRoutes = require('./routes/usuarioRoutes');
 
-const loginRoutes = require('./routes/loginRoutes')
+//  MIDDLEWARES
 
-// importamos ruta clientes
-const clienteRoutes = require('./routes/clientesRoutes');
+app.use(cors()); // Habilitamos CORS (permite conexiones entre servidores)
+app.use(express.json()); // Permite recibir datos en formato JSON
 
-// Activamos middlewares
-app.use(cors());
-app.use(express.json()); // ✅ corregido
 
-// Ruta base
+//  RUTA BASE
+
 app.get('/', (req, res) => {
     res.send('¡Servidor CRM IOYNE funcionando!');
 });
 
-// Usamos las rutas de usuarios
-app.use('/api/usuarios', usuarioRoutes);
-app.use('/api/login', loginRoutes);
 
-// rutas de cliente
-app.use('/api/clientes', clienteRoutes);
+//  USO DE RUTAS
 
-// Encendemos el servidor en el puerto configurado
+app.use('/api/usuarios', usuarioRoutes); // Ruta para usuarios
+app.use('/api/login', loginRoutes); // Ruta para login
+app.use('/api/clientes', clienteRoutes); // Ruta para clientes
+app.use('/api/productos', productosRoutes); // Ruta para productos
+
+
+//  SERVIDOR
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+    console.log(`✅ Servidor corriendo en: http://localhost:${PORT}`);
 });
