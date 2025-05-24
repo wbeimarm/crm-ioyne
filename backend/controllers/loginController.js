@@ -25,6 +25,7 @@ const loginUsuario = async(req, res) => {
             await aumentarIntentos(usuario.email);
 
             // Volver a buscar el usuario actualizado
+
             const usuarioActualizado = await buscarUsuarioPorEmail(usuario.email);
 
             if (usuario.intentos_fallidos + 1 >= 3) {

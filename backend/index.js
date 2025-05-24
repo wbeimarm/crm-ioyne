@@ -12,7 +12,7 @@ const usuarioRoutes = require('./routes/usuarioRoutes');
 const loginRoutes = require('./routes/loginRoutes');
 const clienteRoutes = require('./routes/clientesRoutes');
 const productosRoutes = require('./routes/productosRoutes');
-
+const cotizacionesRoutes = require('./routes/cotizacionesRoutes');
 
 //  CONFIGURACIÓN INICIAL
 
@@ -38,6 +38,8 @@ app.use('/api/usuarios', usuarioRoutes); // Ruta para usuarios
 app.use('/api/login', loginRoutes); // Ruta para login
 app.use('/api/clientes', clienteRoutes); // Ruta para clientes
 app.use('/api/productos', productosRoutes); // Ruta para productos
+app.use('/api/cotizaciones', cotizacionesRoutes); //Ruta para cotizaciones
+
 
 
 //  SERVIDOR
