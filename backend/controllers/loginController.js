@@ -2,42 +2,50 @@ const {
     buscarUsuarioPorEmail,
     aumentarIntentos,
     bloquearUsuario,
-    resetearIntentos,
+    resetearIntentos
 } = require('../models/loginModel');
 
-// Controlador para el login
 const loginUsuario = async(req, res) => {
     const { email, contraseña } = req.body;
 
     try {
         const usuario = await buscarUsuarioPorEmail(email);
-        console.log('Usuario encontrado:', usuario);
         if (!usuario) {
             return res.status(401).json({ mensaje: 'Email o contraseña incorrectos' });
         }
 
+        // Si está bloqueado, comprobamos el tiempo
         if (usuario.bloqueado) {
-            return res.status(403).json({ mensaje: 'Cuenta bloqueada. Contacta al administrador.' });
+            const ahora = new Date();
+            const bloqueo = usuario.fecha_bloqueo;
+            const dosHoras = 2 * 60 * 60 * 1000; // ms
+            if (bloqueo && (ahora - bloqueo) < dosHoras) {
+                // Menos de 2 horas: sigue bloqueado
+                return res
+                    .status(403)
+                    .json({ mensaje: 'Cuenta bloqueada. Inténtalo más tarde.' });
+            }
+            // Ya pasaron 2 horas: desbloquear y continuar
+            await resetearIntentos(email);
+            usuario.bloqueado = false;
+            usuario.intentos_fallidos = 0;
         }
 
+        // Contraseña incorrecta
         if (usuario.contraseña !== contraseña) {
-            //Aumenta intentos fallidos
-            await aumentarIntentos(usuario.email);
-
-            // Volver a buscar el usuario actualizado
-
-            const usuarioActualizado = await buscarUsuarioPorEmail(usuario.email);
-
-            if (usuario.intentos_fallidos + 1 >= 3) {
-                await bloquearUsuario(usuario.email);
-                return res.status(403).json({ mensaje: 'Cuenta bloqueada por 3 intentos fallidos.' });
+            await aumentarIntentos(email);
+            const actualizado = await buscarUsuarioPorEmail(email);
+            if (actualizado.intentos_fallidos >= 3) {
+                await bloquearUsuario(email);
+                return res
+                    .status(403)
+                    .json({ mensaje: 'Cuenta bloqueada por 3 intentos fallidos.' });
             }
-
             return res.status(401).json({ mensaje: 'Email o contraseña incorrectos' });
         }
 
         // Login exitoso
-        await resetearIntentos(usuario.email);
+        await resetearIntentos(email);
         res.json({ mensaje: 'Inicio de sesión exitoso', usuario });
 
     } catch (error) {
@@ -47,5 +55,5 @@ const loginUsuario = async(req, res) => {
 };
 
 module.exports = {
-    loginUsuario,
+    loginUsuario
 };
